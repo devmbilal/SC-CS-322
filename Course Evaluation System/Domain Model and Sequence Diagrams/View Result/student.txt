@@ -1,0 +1,9 @@
+sequenceDiagram
+    actor Student as :student
+    participant System as :Course Evaluation System
+    Student->>System: login(id, password)
+    Student->>System: viewOwnResult()
+    Student->>System: getResultData(courseId, department)
+    System-->>Student: display result
+    Student->>System: printOwnResult()
+    System-->>Student: pdf or xls file

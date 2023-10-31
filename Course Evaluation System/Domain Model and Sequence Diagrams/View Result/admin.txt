@@ -1,0 +1,12 @@
+sequenceDiagram
+    actor Admin as :admin
+    participant System as :Course Evaluation System
+    Admin->>System: login(id,password)
+    Admin->>System:  viewResult()
+    Admin->>System:  getResultData(courseId,studentId,department)
+    System-->>Admin: display result
+    Admin->>System:  getResults(courses,department)
+    System-->>Admin: display detailed information
+    System-->>Admin: display aggregate data
+    Admin->>System:  printResult()
+    System-->>Admin: pdf or xls file
