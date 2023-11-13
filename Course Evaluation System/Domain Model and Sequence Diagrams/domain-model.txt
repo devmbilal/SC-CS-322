@@ -37,7 +37,7 @@ classDiagram
   class Instructor {
     - instructorID
     - name
-    - managesCourses
+    + managesCourses
   }
   class Admin {
     - adminID
