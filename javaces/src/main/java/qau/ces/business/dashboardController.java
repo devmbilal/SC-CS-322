@@ -28,7 +28,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import qau.ces.data.courseData;
 import qau.ces.data.database;
 import qau.ces.data.getData;
 import qau.ces.data.studentData;
@@ -59,42 +58,6 @@ public class dashboardController implements Initializable {
     @FXML
     private Button logout;
     
-    @FXML
-    private AnchorPane availableCourse_form;
-
-    @FXML
-    private TextField availableCourse_course;
-
-    @FXML
-    private TextField availableCourse_description;
-
-    @FXML
-    private TextField availableCourse_degree;
-
-    @FXML
-    private Button availableCourse_addBtn;
-
-    @FXML
-    private Button availableCourse_updateBtn;
-
-    @FXML
-    private Button availableCourse_clearBtn;
-
-    @FXML
-    private Button availableCourse_deleteBtn;
-
-    @FXML
-    private TableView<courseData> availableCourse_tableView;
-
-    @FXML
-    private TableColumn<courseData, String> availableCourse_col_course;
-
-    @FXML
-    private TableColumn<courseData, String> availableCourse_col_description;
-
-    @FXML
-    private TableColumn<courseData, String> availableCourse_col_degree;
-
     @FXML
     private AnchorPane studentGrade_form;
 
@@ -148,236 +111,6 @@ public class dashboardController implements Initializable {
     private Statement statement;
     private ResultSet result;
 
-
-   
-
-       
-
-   
-
-    public void availableCourseAdd() {
-
-        String insertData = "INSERT INTO course (course,description,degree) VALUES(?,?,?)";
-
-        connect = database.connectDb();
-
-        try {
-            Alert alert;
-
-            if (availableCourse_course.getText().isEmpty()
-                    || availableCourse_description.getText().isEmpty()
-                    || availableCourse_degree.getText().isEmpty()) {
-                alert = new Alert(AlertType.ERROR);
-                alert.setTitle("Error Message");
-                alert.setHeaderText(null);
-                alert.setContentText("Please fill all blank fields");
-                alert.showAndWait();
-            } else {
-//            CHECK IF THE COURSE YOU WANT TO INSERT IS ALREADY EXIST!
-                String checkData = "SELECT course FROM course WHERE course = '"
-                        + availableCourse_course.getText() + "'";
-
-                statement = connect.createStatement();
-                result = statement.executeQuery(checkData);
-
-                if (result.next()) {
-                    alert = new Alert(AlertType.ERROR);
-                    alert.setTitle("Error Message");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Course: " + availableCourse_course.getText() + " was already exist!");
-                    alert.showAndWait();
-                } else {
-                    prepare = connect.prepareStatement(insertData);
-                    prepare.setString(1, availableCourse_course.getText());
-                    prepare.setString(2, availableCourse_description.getText());
-                    prepare.setString(3, availableCourse_degree.getText());
-
-                    prepare.executeUpdate();
-
-                    alert = new Alert(AlertType.INFORMATION);
-                    alert.setTitle("Information Message");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Successfully Added!");
-                    alert.showAndWait();
-
-                    // TO BECOME UPDATED OUR TABLEVIEW ONCE THE DATA WE GAVE SUCCESSFUL
-                    availableCourseShowListData();
-                    // TO CLEAR THE TEXT FIELDS
-                    availableCourseClear();
-
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void availableCourseUpdate() {
-
-        String updateData = "UPDATE course SET description = '"
-                + availableCourse_description.getText() + "', degree = '"
-                + availableCourse_degree.getText() + "' WHERE course = '"
-                + availableCourse_course.getText() + "'";
-
-        connect = database.connectDb();
-
-        try {
-            Alert alert;
-
-            if (availableCourse_course.getText().isEmpty()
-                    || availableCourse_description.getText().isEmpty()
-                    || availableCourse_degree.getText().isEmpty()) {
-                alert = new Alert(AlertType.ERROR);
-                alert.setTitle("Error Message");
-                alert.setHeaderText(null);
-                alert.setContentText("Please fill all blank fields");
-                alert.showAndWait();
-            } else {
-
-                alert = new Alert(AlertType.CONFIRMATION);
-                alert.setTitle("Confirmation Message");
-                alert.setHeaderText(null);
-                alert.setContentText("Are you sure you want to UPDATE Course: " + availableCourse_course.getText() + "?");
-                Optional<ButtonType> option = alert.showAndWait();
-
-                if (option.get().equals(ButtonType.OK)) {
-                    statement = connect.createStatement();
-                    statement.executeUpdate(updateData);
-
-                    alert = new Alert(AlertType.INFORMATION);
-                    alert.setTitle("Information Message");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Successfully Updated!");
-                    alert.showAndWait();
-
-                    // TO BECOME UPDATED OUR TABLEVIEW ONCE THE DATA WE GAVE SUCCESSFUL
-                    availableCourseShowListData();
-                    // TO CLEAR THE TEXT FIELDS
-                    availableCourseClear();
-
-                } else {
-                    return;
-                }
-
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public void availableCourseDelete() {
-
-        String deleteData = "DELETE FROM course WHERE course = '"
-                + availableCourse_course.getText() + "'";
-
-        connect = database.connectDb();
-
-        try {
-            Alert alert;
-
-            if (availableCourse_course.getText().isEmpty()
-                    || availableCourse_description.getText().isEmpty()
-                    || availableCourse_degree.getText().isEmpty()) {
-                alert = new Alert(AlertType.ERROR);
-                alert.setTitle("Error Message");
-                alert.setHeaderText(null);
-                alert.setContentText("Please fill all blank fields");
-                alert.showAndWait();
-            } else {
-//                ALL GOOD GUYS! NOW LETS PROCEED TO ADD STUDENTS FORM
-                alert = new Alert(AlertType.CONFIRMATION);
-                alert.setTitle("Confirmation Message");
-                alert.setHeaderText(null);
-                alert.setContentText("Are you sure you want to DELETE Course: " + availableCourse_course.getText() + "?");
-                Optional<ButtonType> option = alert.showAndWait();
-
-                if (option.get().equals(ButtonType.OK)) {
-                    statement = connect.createStatement();
-                    statement.executeUpdate(deleteData);
-
-                    alert = new Alert(AlertType.INFORMATION);
-                    alert.setTitle("Information Message");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Successfully Deleted!");
-                    alert.showAndWait();
-
-                    // TO BECOME UPDATED OUR TABLEVIEW ONCE THE DATA WE GAVE SUCCESSFUL
-                    availableCourseShowListData();
-                    // TO CLEAR THE TEXT FIELDS
-                    availableCourseClear();
-
-                } else {
-                    return;
-                }
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public void availableCourseClear() {
-        availableCourse_course.setText("");
-        availableCourse_description.setText("");
-        availableCourse_degree.setText("");
-    }
-
-    public ObservableList<courseData> availableCourseListData() {
-
-        ObservableList<courseData> listData = FXCollections.observableArrayList();
-
-        String sql = "SELECT * FROM course";
-
-        connect = database.connectDb();
-
-        try {
-            courseData courseD;
-            prepare = connect.prepareStatement(sql);
-            result = prepare.executeQuery();
-
-            while (result.next()) {
-                courseD = new courseData(result.getString("course"),
-                        result.getString("description"),
-                        result.getString("degree"));
-
-                listData.add(courseD);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return listData;
-    }
-
-    private ObservableList<courseData> availableCourseList;
-
-    public void availableCourseShowListData() {
-        availableCourseList = availableCourseListData();
-
-        availableCourse_col_course.setCellValueFactory(new PropertyValueFactory<>("course"));
-        availableCourse_col_description.setCellValueFactory(new PropertyValueFactory<>("description"));
-        availableCourse_col_degree.setCellValueFactory(new PropertyValueFactory<>("degree"));
-
-        availableCourse_tableView.setItems(availableCourseList);
-
-    }
-
-    public void availableCourseSelect() {
-        courseData courseD = availableCourse_tableView.getSelectionModel().getSelectedItem();
-        int num = availableCourse_tableView.getSelectionModel().getSelectedIndex();
-
-        if ((num - 1) < -1) {
-            return;
-        }
-
-        availableCourse_course.setText(courseD.getCourse());
-        availableCourse_description.setText(courseD.getDescription());
-        availableCourse_degree.setText(courseD.getDegree());
-
-    }
 
     public void studentGradesUpdate() {
         double finalCheck1 = 0;
@@ -623,26 +356,13 @@ public class dashboardController implements Initializable {
         username.setText(getData.username);
     }
    
-    // public void defaultNav(){
-    //     home_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #3f82ae, #26bf7d);");
-    // }
+
     
     public void switchForm(ActionEvent event) {
-      if (event.getSource() == availableCourse_btn) {
-            availableCourse_form.setVisible(true);
-            studentGrade_form.setVisible(false);
-
-            availableCourse_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #3f82ae, #26bf7d);");
-            studentGrade_btn.setStyle("-fx-background-color:transparent");
-
-            availableCourseShowListData();
-
-        } else if (event.getSource() == studentGrade_btn) {
-            availableCourse_form.setVisible(false);
+     if (event.getSource() == studentGrade_btn) {
             studentGrade_form.setVisible(true);
 
             studentGrade_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #3f82ae, #26bf7d);");
-            availableCourse_btn.setStyle("-fx-background-color:transparent");
 
             studentGradesShowListData();
             studentGradesSearch();
@@ -662,8 +382,6 @@ public class dashboardController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         displayUsername();
-
-        availableCourseShowListData();
 
         studentGradesShowListData();
 
